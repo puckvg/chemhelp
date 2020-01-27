@@ -253,6 +253,22 @@ def read_properties_b3lyp(filename, values={}):
     line = line.split()
     cv = line[2]
     properties["cv"] = float(cv)
+    
+    # imaginary frequencies
+    start_idx = get_rev_index(lines, "Full mass-weighted force constant matrix")
+    end_idx = get_rev_index(lines, "Diagonal vibrational polarizability")
+    idxs = list(range(start_idx+1, end_idx))
+    imaginary_frequency_count = 0
+
+    for idx in idxs:
+        line = lines[idx]
+        line = line.split()
+        frequencies = line[3:]
+        for frequency in frequencies: 
+            if float(frequency) < 0:
+                imaginary_frequency_count += 1
+                
+    properties["imaginary_frequency_count"]=imaginary_frequency_count
 
     return properties
 
